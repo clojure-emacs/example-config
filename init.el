@@ -35,7 +35,6 @@
   (exec-path-from-shell-initialize))
 
 (dolist (file '("cfg-paredit.el"
-		"cfg-clojuremode.el"
 		"cfg-hlsexp.el"
 		"cfg-cider.el"
                 "cfg-cljrefactor.el"))

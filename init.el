@@ -37,5 +37,6 @@
 (dolist (file '("cfg-paredit.el"
 		"cfg-clojuremode.el"
 		"cfg-hlsexp.el"
-		"cfg-cider.el"))
+		"cfg-cider.el"
+                "cfg-cljrefactor.el"))
   (load (concat dotfiles-dir file)))

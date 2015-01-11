@@ -9,7 +9,7 @@ Example Emacs configuration for clojure development with cider and clj-refactor.
 
 Alternatively you can cherry pick packages and/or config from here for clojure development with cider and clj-refactor and add it to your already existing `~/.emacs.d` directory.
 
-Either way you should be able to `cider-jack-in` on any clojure file of your favourite clojure projec with `C-c M-j`. Prefix for clj-refactor is set to `C-c RET` so for example introduce let would be `C-c RET i l`.
+Either way you should be able to `cider-jack-in` on any clojure file of your favourite clojure project with `C-c M-j`. Prefix for clj-refactor is set to `C-c RET` so for example introduce let would be `C-c RET i l`.
 
 Happy clojure hacking!
 

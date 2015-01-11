@@ -22,7 +22,7 @@
 ;; MELPA stable
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (setq package-user-dir (concat user-emacs-directory "elpa"))
 (package-initialize)
 

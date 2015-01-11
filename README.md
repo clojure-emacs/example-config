@@ -19,4 +19,4 @@ All package versions come from melpa stable apart from `clj-refactor`: this migh
 
 ## Rationale
 
-See clojure-emacs/clj-refactor.el#110 for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.
+See [this issue](https://github.com/clojure-emacs/clj-refactor.el#110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.

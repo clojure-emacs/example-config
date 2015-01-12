@@ -19,11 +19,12 @@
 ;; don't use tabs for indent
 (setq-default indent-tabs-mode nil)
 
-;; MELPA stable
+;; emacs package management
+;; use MELPA stable
 (require 'package)
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-(setq package-user-dir (concat user-emacs-directory "elpa"))
+(setq package-user-dir (concat user-emacs-directory "packages"))
 (package-initialize)
 
 ;; show opening, closing parens

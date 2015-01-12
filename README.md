@@ -22,7 +22,26 @@ Happy clojure hacking!
 
 ## Package versions
 
-All package versions come from melpa stable apart from `clj-refactor`: this might change in the near future and `clj-refactor` will come from stable too.
+All package versions come from melpa stable apart from `clj-refactor`: this might change in the near future and `clj-refactor` will come from stable too. If you are not sure what melpa stable means check out next section about Emacs package management.
+
+### Using Emacs package management
+
+if you look at this code snippet
+
+   ```elisp
+   (require 'package)
+   (add-to-list 'package-archives
+                '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+   (setq package-user-dir (concat user-emacs-directory "packages"))
+   (package-initialize)
+   ```
+
+this basically says that
+- we want to use the emacs package management system
+- we want to use the melpa-stable repo for packages (no snapshot versions from head of master branch of projects only released versions)
+- we want the use the directory named `packages` under user-emacs-directory (resolves to `~/.emacs.d` here) to store the packages.
+
+the above code snippet actually helps the maintainer when the time comes to upgrade packages (there are new releases) with a simple `M-x install package RET cider` for example. More detailed info about emacs [package management](http://ergoemacs.org/emacs/emacs_package_system.html).
 
 ## Rationale
 

@@ -13,6 +13,13 @@ Either way you should be able to `cider-jack-in` on any clojure file of your fav
 
 Happy clojure hacking!
 
+## Featured packages
+
+* [paredit, very basic intro](http://www.braveclojure.com/using-emacs-with-clojure/#5__Paredit), [cheat sheet](https://github.com/joelittlejohn/paredit-cheatsheet)
+* [clojure-mode](https://github.com/clojure-emacs/clojure-mode)
+* [cider](https://github.com/clojure-emacs/clojure-mode), [cider-mode](https://github.com/clojure-emacs/cider#cider-mode)
+* [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el), [refactor functions](https://github.com/clojure-emacs/clj-refactor.el#usage)
+
 ## Package versions
 
 All package versions come from melpa stable apart from `clj-refactor`: this might change in the near future and `clj-refactor` will come from stable too.
@@ -20,3 +27,9 @@ All package versions come from melpa stable apart from `clj-refactor`: this migh
 ## Rationale
 
 See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.
+
+## License
+
+Copyright © 2015 [contributors](https://github.com/clojure-emacs/example-config/graphs/contributors)
+
+Distributed under the GNU General Public License, version 3

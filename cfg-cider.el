@@ -1,3 +1,9 @@
+;; Clojure IDE and REPL for Emacs
+(require-package 'cider)
+
+;; autocompletion
+(require-package 'company)
+
 ;; REPL related stuff
 
 ;; REPL history file

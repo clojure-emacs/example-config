@@ -22,30 +22,17 @@ Happy clojure hacking!
 
 ## Package versions
 
-All package versions come from melpa stable apart from `clj-refactor`: this might change in the near future and `clj-refactor` will come from stable too. If you are not sure what melpa stable means check out next section about Emacs package management.
+Our dependencies largely come from MELPA Stable, which aims to hold only stable versions of packages. The main exception is `clj-refactor` and its dependencies. clj-refactor is available on MELPA Stable, but it has a very out-dated version.
 
 ### Using Emacs package management
 
-if you look at this code snippet
+Where possible, we make use of a helper function, require-package, that checks if a package is installed locally. If it is not installed locally, it will attempt to download and install that package from the package repositories. When you first use this config, Emacs will download all of the requirements that are not included with this configuration (i.e., the ones that we do not get from MELPA stable).
 
-   ```elisp
-   (require 'package)
-   (add-to-list 'package-archives
-                '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-   (setq package-user-dir (concat user-emacs-directory "packages"))
-   (package-initialize)
-   ```
-
-this basically says that
-- we want to use the emacs package management system
-- we want to use the melpa-stable repo for packages (no snapshot versions from head of master branch of projects only released versions)
-- we want the use the directory named `packages` under user-emacs-directory (resolves to `~/.emacs.d` here) to store the packages.
-
-the above code snippet actually helps the maintainer when the time comes to upgrade packages (there are new releases) with a simple `M-x install package RET cider` for example. More detailed info about emacs [package management](http://ergoemacs.org/emacs/emacs_package_system.html).
+[Here is a link](http://ergoemacs.org/emacs/emacs_package_system.html) to more detailed information about package management in Emacs.
 
 ## Rationale
 
-See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.
+See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference Emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.
 
 ## License
 

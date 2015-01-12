@@ -8,6 +8,7 @@ You can use this configuration as your base Emacs configuration, or adapt it to 
 
 1. Clone, copy, or merge this repository as your `~/.emacs.d/` directory
 2. Copy or merge the provided `profiles_sample.clj` to your `~/.lein/` directory as `profiles.clj`
+3. Add a flycheck-clojure configuration to your Clojure project(s)' `project.clj`. You can see [an example of this step](https://github.com/clojure-emacs/squiggly-clojure/blob/master/sample-project/project.clj) in the flycheck-clojure repository.
 
 Load a Clojure file, and execute `cider-jack-in` (`C-c M-j`).
 
@@ -18,9 +19,11 @@ Happy Clojure hacking!
 ## Featured packages
 
 * [paredit, very basic intro](http://www.braveclojure.com/using-emacs-with-clojure/#5__Paredit), [cheat sheet](https://github.com/joelittlejohn/paredit-cheatsheet)
+* [flycheck](http://www.flycheck.org/), [quick start](http://www.flycheck.org/en/latest/guide/quickstart.html)
 * [clojure-mode](https://github.com/clojure-emacs/clojure-mode)
 * [cider](https://github.com/clojure-emacs/cider), [cider-mode](https://github.com/clojure-emacs/cider#cider-mode)
 * [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el), [refactor functions](https://github.com/clojure-emacs/clj-refactor.el#usage)
+* [flycheck-clojure, aka squiggly-clojure](https://github.com/clojure-emacs/squiggly-clojure)
 
 ## Package versions
 

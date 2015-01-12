@@ -17,7 +17,7 @@ Happy clojure hacking!
 
 * [paredit, very basic intro](http://www.braveclojure.com/using-emacs-with-clojure/#5__Paredit), [cheat sheet](https://github.com/joelittlejohn/paredit-cheatsheet)
 * [clojure-mode](https://github.com/clojure-emacs/clojure-mode)
-* [cider](https://github.com/clojure-emacs/clojure-mode), [cider-mode](https://github.com/clojure-emacs/cider#cider-mode)
+* [cider](https://github.com/clojure-emacs/cider), [cider-mode](https://github.com/clojure-emacs/cider#cider-mode)
 * [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el), [refactor functions](https://github.com/clojure-emacs/clj-refactor.el#usage)
 
 ## Package versions

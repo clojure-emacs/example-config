@@ -42,6 +42,8 @@ Most users will eventually want more in their emacs config than the clojure-spec
 
 This would be all that is needed for emacs to automatically download the Rainbow Delimiters package from Melpa. Additional configs of any kind could be added to this user-customizations.el file. If the file is ommitted, no problem, no customizations are run.
 
+######Need Inspiration? [Here is one example of a user-customizations.el in action](https://github.com/hellofunk/example-config)
+
 ## Rationale
 
 See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference Emacs config which is specially focused on Clojure development with all the bells and whistles but does not have much else in it.

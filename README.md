@@ -32,6 +32,15 @@ Where possible, we make use of a helper function, require-package, that checks i
 
 [Here is a link](http://ergoemacs.org/emacs/emacs_package_system.html) to more detailed information about package management in Emacs.
 
+## User Customizations
+
+Most users will eventually want more in their emacs config than the clojure-specific tools included here. If you wish to add additional functionality to your emacs config beyond what is in this setup, simply *add a file* called "user-customizations.el" to your .emacs.d/ directory. Within that file, you have access to the (require-package ...) function defined here (explained above), so for example, you could have:
+
+ ;; a line inside your own user-customizations.el in .emacs.d:
+ (require-package 'rainbow-delimiters)
+
+This would be all that is needed for emacs to automatically download the Rainbow Delimiters package from Melpa. Additional configs of any kind could be added to this user-customizations.el file. If the file is ommitted, no problem, no customizations are run.
+
 ## Rationale
 
 See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference Emacs config which is specially focused on Clojure development with all the bells and whistles but does not have much else in it.

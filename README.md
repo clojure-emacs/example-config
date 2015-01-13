@@ -1,17 +1,19 @@
 # Example Config
 
-Example Emacs configuration for clojure development with cider and clj-refactor.
+An example Emacs configuration for Clojure development with CIDER and clj-refactor.
 
 ## Usage
 
-1. Clone this repository as your `~/.emacs.d/` directory (or alternatively copy the contents into your `.emacs.d`)
-2. copy the provided `profiles_sample.clj` to your `~/.lein/` directory and rename it to `profiles.clj` (again alternatively just merge the contents of the sample profiles.clj with your existing profiles.clj if you already have one)
+You can use this configuration as your base Emacs configuration, or adapt it to your own configuration.
 
-Alternatively you can cherry pick packages and/or config from here for clojure development with cider and clj-refactor and add it to your already existing `~/.emacs.d` directory.
+1. Clone, copy, or merge this repository as your `~/.emacs.d/` directory
+2. Copy or merge the provided `profiles_sample.clj` to your `~/.lein/` directory as `profiles.clj`
 
-Either way you should be able to `cider-jack-in` on any clojure file of your favourite clojure project with `C-c M-j`. Prefix for clj-refactor is set to `C-c RET` so for example introduce let would be `C-c RET i l`.
+Load a Clojure file, and execute `cider-jack-in` (`C-c M-j`).
 
-Happy clojure hacking!
+clj-refactor's prefix is `C-c RET`. It uses mnemonic keywords to provide shortcuts for common tasks. One example of its functionality is introduce let, which would be `C-c RET i l`. To view a complete list of its functionality, hit `C-c RET C-h`.
+
+Happy Clojure hacking!
 
 ## Featured packages
 
@@ -32,7 +34,7 @@ Where possible, we make use of a helper function, require-package, that checks i
 
 ## Rationale
 
-See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference Emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.
+See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference Emacs config which is specially focused on Clojure development with all the bells and whistles but does not have much else in it.
 
 ## License
 

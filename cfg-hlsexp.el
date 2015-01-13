@@ -1,3 +1,5 @@
+(require-package 'hl-sexp)
+
 ;; hl-sexp: minor mode to highlight s-expression
 (require 'hl-sexp)
 

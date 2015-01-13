@@ -1,3 +1,5 @@
+(require-package 'paredit)
+
 ;; Paredit
 (require 'paredit)
 (add-hook 'lisp-mode-hook #'paredit-mode)

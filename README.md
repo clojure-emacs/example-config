@@ -1,17 +1,19 @@
 # Example Config
 
-Example Emacs configuration for clojure development with cider and clj-refactor.
+An example Emacs configuration for Clojure development with CIDER and clj-refactor.
 
 ## Usage
 
-1. Clone this repository as your `~/.emacs.d/` directory (or alternatively copy the contents into your `.emacs.d`)
-2. copy the provided `profiles_sample.clj` to your `~/.lein/` directory and rename it to `profiles.clj` (again alternatively just merge the contents of the sample profiles.clj with your existing profiles.clj if you already have one)
+You can use this configuration as your base Emacs configuration, or adapt it to your own configuration.
 
-Alternatively you can cherry pick packages and/or config from here for clojure development with cider and clj-refactor and add it to your already existing `~/.emacs.d` directory.
+1. Clone, copy, or merge this repository as your `~/.emacs.d/` directory
+2. Copy or merge the provided `profiles_sample.clj` to your `~/.lein/` directory as `profiles.clj`
 
-Either way you should be able to `cider-jack-in` on any clojure file of your favourite clojure project with `C-c M-j`. Prefix for clj-refactor is set to `C-c RET` so for example introduce let would be `C-c RET i l`.
+Load a Clojure file, and execute `cider-jack-in` (`C-c M-j`).
 
-Happy clojure hacking!
+clj-refactor's prefix is `C-c RET`. It uses mnemonic keywords to provide shortcuts for common tasks. One example of its functionality is introduce let, which would be `C-c RET i l`. To view a complete list of its functionality, hit `C-c RET C-h`.
+
+Happy Clojure hacking!
 
 ## Featured packages
 
@@ -22,30 +24,17 @@ Happy clojure hacking!
 
 ## Package versions
 
-All package versions come from melpa stable apart from `clj-refactor`: this might change in the near future and `clj-refactor` will come from stable too. If you are not sure what melpa stable means check out next section about Emacs package management.
+Our dependencies largely come from MELPA Stable, which aims to hold only stable versions of packages. The main exception is `clj-refactor` and its dependencies. clj-refactor is available on MELPA Stable, but it has a very out-dated version.
 
 ### Using Emacs package management
 
-if you look at this code snippet
+Where possible, we make use of a helper function, require-package, that checks if a package is installed locally. If it is not installed locally, it will attempt to download and install that package from the package repositories. When you first use this config, Emacs will download all of the requirements that are not included with this configuration (i.e., the ones that we do not get from MELPA stable).
 
-   ```elisp
-   (require 'package)
-   (add-to-list 'package-archives
-                '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-   (setq package-user-dir (concat user-emacs-directory "packages"))
-   (package-initialize)
-   ```
-
-this basically says that
-- we want to use the emacs package management system
-- we want to use the melpa-stable repo for packages (no snapshot versions from head of master branch of projects only released versions)
-- we want the use the directory named `packages` under user-emacs-directory (resolves to `~/.emacs.d` here) to store the packages.
-
-the above code snippet actually helps the maintainer when the time comes to upgrade packages (there are new releases) with a simple `M-x install package RET cider` for example. More detailed info about emacs [package management](http://ergoemacs.org/emacs/emacs_package_system.html).
+[Here is a link](http://ergoemacs.org/emacs/emacs_package_system.html) to more detailed information about package management in Emacs.
 
 ## Rationale
 
-See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference emacs config which is specially focused on clojure development with all the bells and whistles but does not have much else in it.
+See [this issue](https://github.com/clojure-emacs/clj-refactor.el/issues/110) for the discussion which resulted in creating this sample configuration. The goal of this to provide a reference Emacs config which is specially focused on Clojure development with all the bells and whistles but does not have much else in it.
 
 ## License
 

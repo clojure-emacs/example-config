@@ -9,6 +9,8 @@
 ;; - clojure-mode
 ;; - cider
 ;; - company
+;; - flycheck (not from stable!)
+;; - flycheck-clojure
 ;; - clj-refactor (not from stable!)
 
 ;; Add .emacs.d to load-path

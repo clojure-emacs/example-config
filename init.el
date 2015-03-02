@@ -57,6 +57,7 @@ re-downloaded in order to locate PACKAGE."
   (exec-path-from-shell-initialize))
 
 (dolist (file '("cfg-paredit.el"
+		"cfg-flycheck.el"
 		"cfg-hlsexp.el"
 		"cfg-cider.el"
                 "cfg-cljrefactor.el"))

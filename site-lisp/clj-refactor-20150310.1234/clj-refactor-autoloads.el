@@ -14,7 +14,7 @@
 ;;;;;;  cljr-add-use-to-ns cljr-add-require-to-ns cljr-remove-unused-requires
 ;;;;;;  cljr-sort-ns cljr-rename-file cljr-add-keybindings-with-modifier
 ;;;;;;  cljr-add-keybindings-with-prefix) "clj-refactor" "clj-refactor.el"
-;;;;;;  (21682 49253 0 0))
+;;;;;;  (21759 23082 378212 847000))
 ;;; Generated autoloads from clj-refactor.el
 
 (autoload 'cljr-add-keybindings-with-prefix "clj-refactor" "\
@@ -72,7 +72,7 @@ Presently, there's no support for :use clauses containing :exclude.
 (autoload 'cljr-move-form "clj-refactor" "\
 Move the form containing POINT to a new namespace.
 
-If REGION is active, move all forms contained by region. 
+If REGION is active, move all forms contained by region.
 
 \(fn)" t nil)
 
@@ -191,8 +191,8 @@ A mode to keep the clj-refactor keybindings.
 
 ;;;***
 
-;;;### (autoloads nil nil ("clj-refactor-pkg.el") (21682 49253 541605
-;;;;;;  0))
+;;;### (autoloads nil nil ("clj-refactor-pkg.el") (21759 23082 396511
+;;;;;;  651000))
 
 ;;;***
 

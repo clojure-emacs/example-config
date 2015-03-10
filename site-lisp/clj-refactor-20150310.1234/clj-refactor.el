@@ -3,7 +3,7 @@
 ;; Copyright © 2012-2014 Magnar Sveen <magnars@gmail.com>
 
 ;; Author: Magnar Sveen <magnars@gmail.com>
-;; Version: 20150104.1358
+;; Version: 20150310.1234
 ;; X-Original-Version: 0.13.0
 ;; Keywords: convenience
 ;; Package-Requires: ((s "1.8.0") (dash "2.4.0") (yasnippet "0.6.1") (paredit "22") (multiple-cursors "1.2.2") (cider "0.8.1"))
@@ -71,13 +71,6 @@
 (defcustom cljr-project-clean-prompt t
   "When true prompts to ask before doing anything if false
    runs project clean functions without warning."
-  :group 'cljr
-  :type 'boolean)
-
-(defcustom cljr-find-symbols-in-dir-prompt nil
-  "When true prompts for directory to search for symbols in when
-   finding usages and renaming symbols, when false defaults to project
-   dir"
   :group 'cljr
   :type 'boolean)
 
@@ -265,7 +258,9 @@ if SAVE-EXCURSION is T POINT does not move."
       (search-forward s bound t))))
 
 (defun cljr--goto-toplevel ()
-  (paredit-backward-up (cljr--depth-at-point)))
+  (paredit-backward-up (cljr--depth-at-point))
+  (when (looking-back "#")
+    (backward-char)))
 
 (defun cljr--toplevel-p ()
   "T unless we're in an s-expression or string."
@@ -541,11 +536,11 @@ word test in it and whether the file lives under the test/ directory."
   (interactive)
   (cljr--assert-middleware)
   (let* ((body (replace-regexp-in-string "\"" "\"" (buffer-substring-no-properties (point-min) (point-max))))
-         (result (cljr--call-middleware-sync "value"
-                                             (list "op" "refactor"
-                                                   "ns-string" body
-                                                   "refactor-fn" "find-debug-fns"
-                                                   "debug-fns" cljr-debug-functions)))
+         (result (cljr--call-middleware-sync
+                  (list "op" "find-debug-fns"
+                        "ns-string" body
+                        "debug-fns" cljr-debug-functions)
+                  "value"))
          (debug-fn-tuples (pop result))
          (removed-lines 0))
     (while debug-fn-tuples
@@ -1501,7 +1496,7 @@ front of function literals and sets."
 
 ;; ------ magic requires -------
 
-(defvar cljr--magic-requires-re
+(defun cljr--magic-requires-re ()
   (concat "(\\(" (regexp-opt (-map 'car cljr-magic-require-namespaces)) "\\)/"))
 
 ;;;###autoload
@@ -1510,7 +1505,7 @@ front of function literals and sets."
   (interactive)
   (insert "/")
   (when (and cljr-magic-requires
-             (looking-back cljr--magic-requires-re 6))
+             (looking-back (cljr--magic-requires-re) (point-at-bol)))
     (let* ((short (match-string-no-properties 1))
            (long (aget cljr-magic-require-namespaces short)))
       (if (and (not (cljr--in-namespace-declaration? (concat ":as " short)))
@@ -1549,7 +1544,7 @@ sorts the project's dependency vectors."
       (when (and (s-ends-with? "clj" filename)
                  (not (cljr--excluded-from-project-clean? filename)))
         (cljr--update-file filename
-          (ignore-errors (-map 'funcall cljr-project-clean-functions)))))
+                           (ignore-errors (-map 'funcall cljr-project-clean-functions)))))
     (cljr-sort-project-dependencies)
     (message "Project clean done.")))
 
@@ -1649,32 +1644,39 @@ sorts the project's dependency vectors."
   (interactive)
   "Sorts all dependency vectors in project.clj"
   (cljr--update-file (cljr--project-file)
-    (goto-char (point-min))
-    (while (re-search-forward ":dependencies" (point-max) t)
-      (forward-char)
-      (-> (buffer-substring-no-properties (point)
-                                          (cljr--point-after 'paredit-forward))
-          cljr--get-sorted-dependency-names
-          (cljr--sort-dependency-vectors (->> (cljr--delete-and-extract-sexp)
-                                              (s-chop-prefix "[")
-                                              (s-chop-suffix "]")))
-          insert))
-    (indent-region (point-min) (point-max))
-    (save-buffer)))
+                     (goto-char (point-min))
+                     (while (re-search-forward ":dependencies" (point-max) t)
+                       (forward-char)
+                       (-> (buffer-substring-no-properties (point)
+                                                           (cljr--point-after 'paredit-forward))
+                           cljr--get-sorted-dependency-names
+                           (cljr--sort-dependency-vectors (->> (cljr--delete-and-extract-sexp)
+                                                               (s-chop-prefix "[")
+                                                               (s-chop-suffix "]")))
+                           insert))
+                     (indent-region (point-min) (point-max))
+                     (save-buffer)))
 
-(defun cljr--call-middleware-sync (key request)
-  (let ((nrepl-sync-request-timeout 25))
-    (nrepl-dict-get (nrepl-send-sync-request request) key)))
+(defun cljr--call-middleware-sync (request &optional key)
+  "Call the middleware with REQUEST.
+
+If it's present KEY indicates the key to extract from the response."
+  (let* ((nrepl-sync-request-timeout 25)
+         (response (-> request nrepl-send-sync-request cljr--maybe-rethrow-error)))
+    (if key
+        (nrepl-dict-get response key)
+      response)))
 
 (defun cljr--call-middleware-async (request &optional callback)
   (nrepl-send-request request callback))
 
 (defun cljr--get-artifacts-from-middleware (force)
   (message "Retrieving list of available libraries...")
-  (let ((request (list "op" "artifact-list" "force" (if force "true" "false"))))
-    (->> request
-         (cljr--call-middleware-sync "value")
-         (s-split " "))))
+  (let* ((request (list "op" "artifact-list" "force" (if force "true" "false")))
+         (artifacts (cljr--call-middleware-sync request "artifacts")))
+    (if artifacts
+        artifacts
+      (error "Empty artifact list received from middleware!"))))
 
 (defun cljr-update-artifact-cache ()
   (interactive)
@@ -1683,11 +1685,11 @@ sorts the project's dependency vectors."
                                (lambda (_) (message "Artifact cache updated"))))
 
 (defun cljr--get-versions-from-middleware (artifact)
-  (let ((request (list "op" "artifact-versions"
-                       "artifact" artifact)))
-    (->> request
-         (cljr--call-middleware-sync "value")
-         (s-split " "))))
+  (let* ((request (list "op" "artifact-versions" "artifact" artifact))
+         (versions (cljr--call-middleware-sync request "versions")))
+    (if versions
+        versions
+      (error "Empty version list received from middleware!"))))
 
 (defun cljr--prompt-user-for (prompt &optional choices)
   (completing-read prompt choices))
@@ -1712,8 +1714,8 @@ sorts the project's dependency vectors."
     (error "CIDER isn't installed!"))
   (unless (cider-connected-p)
     (error "CIDER isn't connected!"))
-  (unless (nrepl-op-supported-p "refactor")
-    (error "nrepl-refactor middleware not available!")))
+  (unless (nrepl-op-supported-p "find-symbol")
+    (error "nrepl-refactor middleware not available! Did you remember to install it?")))
 
 (defun cljr--assert-leiningen-project ()
   (unless (string= (file-name-nondirectory (or (cljr--project-file) ""))
@@ -1798,70 +1800,89 @@ sorts the project's dependency vectors."
   (when current-prefix-arg
     (cljr--promote-fn)))
 
-(defun cljr--populate-find-symbol-buffer (occurrence)
+(defun cljr--insert-in-find-symbol-buffer (occurrence)
   (save-excursion
     (pop-to-buffer cljr--find-symbol-buffer)
     (end-of-buffer)
     (insert occurrence)))
 
+(defun cljr--end-of-buffer? ()
+  "True if point is at end of buffer"
+  (= (point) (cljr--point-after 'end-of-buffer)))
+
 (defun cljr--find-symbol-sync (symbol ns)
   (let* ((filename (buffer-file-name))
          (line (line-number-at-pos))
          (column (1+ (current-column)))
-         (dir (file-truename
-                             (if cljr-find-symbols-in-dir-prompt
-                                 (read-directory-name "Base directory: " (cljr--project-dir))
-                               (cljr--project-dir))))
-         (find-symbol-request (list "op" "refactor"
-                                    "ns" ns
-                                    "clj-dir" dir
-                                    "file" filename
-                                    "loc-line" line
-                                    "loc-column" column
-                                    "refactor-fn" "find-symbol"
-                                    "name" symbol)))
-    (cljr--call-middleware-sync "occurrence" find-symbol-request)))
+         (dir (cljr--project-dir))
+         (request (list "op" "find-symbol"
+                        "ns" ns
+                        "dir" dir
+                        "file" filename
+                        "line" line
+                        "column" column
+                        "name" symbol))
+         occurrences)
+    (with-temp-buffer
+      (insert (cljr--call-middleware-sync request "occurrence"))
+      (unless (cljr--empty-buffer?)
+        (goto-char (point-min))
+        (while (not (cljr--end-of-buffer?))
+          (push (read (current-buffer)) occurrences))))
+    occurrences))
 
-(defun cljr--find-symbol (force-project-dir symbol ns callback)
+(defun cljr--find-symbol (symbol ns callback)
   (let* ((filename (buffer-file-name))
          (line (line-number-at-pos))
          (column (1+ (current-column)))
-         (dir (file-truename
-               (if (and (not force-project-dir) cljr-find-symbols-in-dir-prompt)
-                   (read-directory-name "Base directory: " (cljr--project-dir))
-                 (cljr--project-dir))))
-         (find-symbol-request (list "op" "refactor"
+         (dir (cljr--project-dir))
+         (find-symbol-request (list "op" "find-symbol"
                                     "ns" ns
-                                    "clj-dir" dir
+                                    "dir" dir
                                     "file" filename
-                                    "loc-line" line
-                                    "loc-column" column
-                                    "refactor-fn" "find-symbol"
+                                    "line" line
+                                    "column" column
                                     "name" symbol)))
     (with-current-buffer (nrepl-current-connection-buffer)
       (setq cjr--occurrence-count 0)
       (setq cljr--num-syms -1))
     (cljr--call-middleware-async find-symbol-request callback)))
 
+(defun cljr--first-line (s)
+  (-> s s-lines first s-trim))
+
+(defun cljr--project-relative-path (path)
+  "Denormalize PATH to make to make it relative to the project
+root."
+  (s-chop-prefix (cljr--project-dir) path))
+
+(defun cljr--format-symbol-occurrence (occurrence)
+  (let ((file (plist-get occurrence :file))
+        (line (plist-get occurrence :line-beg))
+        (match (plist-get occurrence :match )))
+    (format "%s:%s: %s\n" (cljr--project-relative-path file) line
+            (cljr--first-line match))))
+
 (defun cljr--format-and-insert-symbol-occurrence (occurrence-resp)
   (let ((occurrence (nrepl-dict-get occurrence-resp "occurrence"))
-        (syms-count (nrepl-dict-get occurrence-resp "syms-count"))
-        (cljr--find-symbol-buffer  "*cljr-find-usages*"))
-    (when syms-count
-      (setq cljr--num-syms syms-count))
+        (count (nrepl-dict-get occurrence-resp "count"))
+        (cljr--find-symbol-buffer "*cljr-find-usages*"))
+    (cljr--maybe-rethrow-error occurrence-resp)
+    (when count
+      (setq cljr--num-syms count))
     (when occurrence
-      (setq cjr--occurrence-count (1+ cjr--occurrence-count)))
-    (when occurrence
+      (incf cjr--occurrence-count)
       (->> occurrence
-           (apply (lambda (line _ col _ _ file match) (format "%s:%s: %s\n" file line match)))
-           (cljr--populate-find-symbol-buffer)))
+           read
+           cljr--format-symbol-occurrence
+           cljr--insert-in-find-symbol-buffer))
     (when (= cjr--occurrence-count cljr--num-syms)
       (cljr--finalise-find-symbol-buffer cljr--num-syms))))
 
 (defun cljr--finalise-find-symbol-buffer (num-of-symbols)
   (with-current-buffer "*cljr-find-usages*"
-    (insert (format "\nFind symbol finished: %d occurrence%s found"  num-of-symbols (if (> num-of-symbols 1) "s" "")))
-    (grep-mode)))
+    (insert (format "\nFind symbol finished: %d occurrence%s found"
+                    num-of-symbols (if (> num-of-symbols 1) "s" "")))))
 
 (defun cljr--setup-find-symbol-buffer (symbol-name)
   (save-window-excursion
@@ -1869,7 +1890,10 @@ sorts the project's dependency vectors."
       (kill-buffer cljr--find-symbol-buffer))
     (pop-to-buffer cljr--find-symbol-buffer)
     (with-current-buffer "*cljr-find-usages*"
-      (insert (format "-*- mode: grep; The symbol '%s' occurs in the following places:  -*-\n\n" symbol-name)))))
+      (insert (format "'%s' occurs in the following places:\n\n" symbol-name))
+      (grep-mode)
+      (setq buffer-read-only nil)
+      (setq-local compilation-search-path (list (cljr--project-dir))))))
 
 (defun cljr-find-usages ()
   (interactive)
@@ -1881,44 +1905,30 @@ sorts the project's dependency vectors."
          (ns (nrepl-dict-get var-info "ns"))
          (symbol-name (nrepl-dict-get var-info "name")))
     (cljr--setup-find-symbol-buffer (or symbol-name symbol))
-    (cljr--find-symbol nil (or symbol-name symbol) ns 'cljr--format-and-insert-symbol-occurrence)))
+    (cljr--find-symbol (or symbol-name symbol) ns 'cljr--format-and-insert-symbol-occurrence)))
 
-(defun cljr--read-symbol-metadata (occurrences)
-  (->> occurrences
-       (-partition 7)
-       (-map (lambda (symbol-meta)
-               (apply (lambda (line-start line-end col-start col-end name file match)
-                        (list :line-start line-start
-                              :line-end line-end
-                              :col-start col-start
-                              :col-end col-end
-                              :name (first (last (s-split "/" name)))
-                              :file file
-                              :match match))
-                      symbol-meta)))))
-
-(defun cljr--rename-symbol (ns occurrences new-name)
+(defun cljr--rename-occurrences (ns occurrences new-name)
   (save-excursion
     (dolist (symbol-meta occurrences)
       (with-current-buffer
           (find-file-noselect (plist-get symbol-meta :file))
         (goto-char (point-min))
-        (let* ((line-start (plist-get symbol-meta :line-start))
-               (line-e (or (plist-get symbol-meta :line-end) line-start))
-               (line-end line-start)
-               (column-start (1- (or (plist-get symbol-meta :col-start) 1)))
-               (start (progn (forward-line (1- line-start))
-                             (move-to-column column-start)
+        (let* ((line-beg (plist-get symbol-meta :line-beg))
+               (line-e (or (plist-get symbol-meta :line-end) line-beg))
+               (line-end line-beg)
+               (col-beg (1- (or (plist-get symbol-meta :col-beg) 1)))
+               (start (progn (forward-line (1- line-beg))
+                             (move-to-column col-beg)
                              (point)))
-               (column-end (if (= line-start line-e)
-                               (line-end-position)
-                             (or (plist-get symbol-meta :col-end) (line-end-position))))
+               (col-end (if (= line-beg line-e)
+                            (line-end-position)
+                          (or (plist-get symbol-meta :col-end) (line-end-position))))
                (end (progn (goto-char (point-min))
                            (forward-line (1- line-e))
-                           (move-to-column column-end)
+                           (move-to-column col-end)
                            (point)))
                (orig-name (plist-get symbol-meta :name))
-               (name (regexp-quote orig-name))
+               (name (regexp-quote (cljr--symbol-suffix orig-name)))
                (matches-count 0)
                (replaced nil))
           (goto-char start)
@@ -1948,24 +1958,19 @@ sorts the project's dependency vectors."
   (let* ((symbol (cider-symbol-at-point))
          (var-info (cider-var-info symbol))
          (symbol-name (nrepl-dict-get var-info "name"))
-         (ns (nrepl-dict-get var-info "ns")))
-    (let* ((occurrences (-> (or symbol-name symbol)
-                          (cljr--find-symbol-sync ns)
-                          cljr--read-symbol-metadata))
-           (buffer-of-symbol (cider-find-var-file (concat ns "/" symbol-name)))
-           (tooling-buffer-p (cider--tooling-file-p (buffer-name buffer-of-symbol))))
-      (cljr--rename-symbol ns occurrences new-name)
-      (when (and (not tooling-buffer-p) symbol-name)
-        (message "Reloading buffer %s where symbol is defined" buffer-of-symbol))
-      (message "Renamed %s occurrences of %s" (length occurrences) (or symbol-name symbol))
-      (when (not tooling-buffer-p)
-        (when symbol-name
-          (cider-load-buffer buffer-of-symbol))
-        (cljr-warm-ast-cache)))))
+         (ns (nrepl-dict-get var-info "ns"))
+         (name (or symbol-name symbol))
+         (occurrences (cljr--find-symbol-sync name ns))
+         (buffer-of-symbol (cider-find-var-file (concat ns "/" symbol-name)))
+         (tooling-buffer-p (cider--tooling-file-p (buffer-name buffer-of-symbol))))
+    (cljr--rename-occurrences ns occurrences new-name)
+    (message "Renamed %s occurrences of %s" (length occurrences) name)
+    (when (> (length occurrences) 0)
+      (cljr-warm-ast-cache))))
 
 (defun cljr-warm-ast-cache ()
   (interactive)
-  (cljr--find-symbol t "join" "clojure.string" (lambda (_))))
+  (cljr--find-symbol "join" "clojure.string" (lambda (_))))
 
 (defun cljr--replace-ns (new-ns)
   (save-excursion
@@ -1993,7 +1998,7 @@ sorts the project's dependency vectors."
 (defun cljr--narrow-candidates (candidates)
   (cond ((= (length candidates) 0)
          (error "Couldn't find any symbols matching %s on classpath."
-                (cljr--normalize-symbol-name symbol)))
+                (cljr--symbol-suffix symbol)))
         ((= (length candidates) 1)
          (first candidates))
         (t
@@ -2008,45 +2013,93 @@ sorts the project's dependency vectors."
     (cljr--insert-in-ns ":import")
     (cljr--insert-libspec-verbosely missing)))
 
+(defun cljr--symbol-prefix (symbol)
+  "java.util.Date => java.util
+str/split => str
+split => ''"
+  (cond ((s-contains? "/" symbol) (first (s-split "/" symbol)))
+        ((s-matches? "\\w+\\.\\w+" symbol)
+         (s-join "." (butlast (s-split "\\." symbol))))
+        (t "")))
+
 (defun cljr--insert-missing-require (symbol missing)
   (save-excursion
     (cljr--insert-in-ns ":require")
     (let ((alias? (s-contains? "/" symbol)))
       (if alias?
-          (let ((prefix (first (s-split "/" symbol))))
-            (cljr--insert-libspec-verbosely (format "[%s :as %s]" missing prefix)))
-        (cljr--insert-libspec-verbosely (format "[%s :refer [%s]]"
-                                                missing symbol))))))
+          (cljr--insert-libspec-verbosely (format "[%s :as %s]" missing
+                                                  (cljr--symbol-prefix symbol)))
+        (if (and (s-contains? "." missing)
+                 (s-uppercase? (s-left 1 (cljr--symbol-suffix missing))))
+            (cljr--insert-libspec-verbosely  (cljr--symbol-prefix symbol))
+          (cljr--insert-libspec-verbosely (format "[%s :refer [%s]]"
+                                                  missing symbol)))))))
 
-(defun cljr--add-missing-libspec (symbol candidates type)
-  (let* ((candidates (and candidates (s-split " " candidates)))
-         (missing (cljr--narrow-candidates candidates)))
-    (if (string= type "require")
-        (cljr--insert-missing-require symbol missing)
-      (cljr--insert-missing-import missing))))
+(defun cljr--add-missing-libspec (symbol candidates-and-types)
+  (let* ((candidates (mapcar (lambda (pair) (symbol-name (first pair)))
+                             candidates-and-types))
+         (missing (cljr--narrow-candidates candidates))
+         (type (second (assoc (intern missing) candidates-and-types))))
+    (cond ((eq type :ns) (cljr--insert-missing-require symbol missing))
+          ((eq type :type)
+           ;; We need to both require the ns, to trigger compilation,
+           ;; and then import the java class
+
+           ;; In the line below we're assuming that all clojure code
+           ;; will prefer - over _ when naming namespaces :(
+           (progn (cljr--insert-missing-require (s-replace "_" "-" missing)
+                                                missing)
+                  (cljr--insert-missing-import missing)))
+          ((eq type :class) (cljr--insert-missing-import missing))
+          (t (error (format "Uknown type %s" type))))))
+
+(defun cljr--symbol-suffix (symbol)
+  "java.util.Date => Date
+Date => Date
+clojure.string/split => split
+str/split => split"
+  (let ((name (cljr--normalize-symbol-name symbol)))
+    (cond
+     ((s-matches? "\\w+\\.\\w+" name)
+      (->> name (s-split "\\.") last car cljr--symbol-suffix))
+     ((s-contains? "/" name)
+      (->> name (s-split "/") second cljr--symbol-suffix))
+     (t name))))
 
 (defun cljr--normalize-symbol-name (name)
-  "Removes prefix and reader macros
+  "Removes reader macros and quoting
 
-java.util.Date. -> Date
-str/split -> split
-Date. -> Date"
-  (cond ((s-ends-with? "." name)
-         (->> name (s-chop-suffix ".") cljr--normalize-symbol-name))
-        ((s-contains? "/" name) (->> name (s-split "/") second))
-        ((s-matches? "\\w+\\.\\w+" name)
-         (->> name (s-split "\\.") last car))
-        (t name)))
+Date. -> Date
+@sym => sym
+#'sym => sym
+'sym => sym
+~sym => sym
+~@sym => sym"
+  (cond
+   ((s-ends-with? "." name)
+    (->> name (s-chop-suffix ".") cljr--normalize-symbol-name))
+   ((s-starts-with? "#'" name)
+    (-> name (s-chop-prefix "#'") cljr--normalize-symbol-name))
+   ((s-starts-with? "'" name)
+    (->> name (s-chop-prefix "'") cljr--normalize-symbol-name))
+   ((s-starts-with? "~" name)
+    (->> name (s-chop-prefix "~") cljr--normalize-symbol-name))
+   ((s-starts-with? "~@" name)
+    (->> name (s-chop-prefix "~@") cljr--normalize-symbol-name))
+   ((s-starts-with? "@" name)
+    (->> name (s-chop-prefix "@") cljr--normalize-symbol-name))
+   (t name)))
 
 (defun cljr--call-middleware-to-resolve-missing (symbol)
   ;; Just so this part can be mocked out in a step definition
   (nrepl-send-sync-request
    (list "op" "resolve-missing"
-         "symbol" (cljr--normalize-symbol-name symbol))))
+         "symbol" (cljr--symbol-suffix symbol))))
 
 (defun cljr--maybe-rethrow-error (response)
-  (-when-let (err (nrepl-dict-get response "error"))
-    (error err)))
+  (-if-let (err (nrepl-dict-get response "error"))
+      (error err)
+    response))
 
 (defun cljr-add-missing-libspec ()
   "Requires or imports the symbol at point.
@@ -2057,10 +2110,11 @@ containing join will be aliased to str."
   (cljr--assert-middleware)
   (let* ((symbol (cider-symbol-at-point))
          (response (cljr--call-middleware-to-resolve-missing symbol))
-         (type (nrepl-dict-get response "type"))
-         (candidates (nrepl-dict-get response "candidates")))
+         (candidates-and-types (nrepl-dict-get response "candidates")))
     (cljr--maybe-rethrow-error response)
-    (cljr--add-missing-libspec symbol candidates type)))
+    (if candidates-and-types
+        (cljr--add-missing-libspec symbol (read candidates-and-types))
+      (message "Can't find %s on classpath" (cljr--symbol-suffix symbol)))))
 
 (defun cljr--dependency-vector-at-point ()
   (save-excursion
@@ -2072,7 +2126,7 @@ containing join will be aliased to str."
 
 (defun cljr--hotload-dependency-callback (response)
   (cljr--maybe-rethrow-error response)
-  (message "Hotloaded %s" response))
+  (message "Hotloaded %s" (nrepl-dict-get response "dependency")))
 
 (defun cljr--call-middleware-to-hotload-dependency (dep)
   (nrepl-send-request
@@ -2142,7 +2196,7 @@ With a prefix the newly created defn will be public."
          (name (cljr--prompt-user-for "Name: "))
          (fn-regexp (s-concat "(defn-? " name))
          unbound irrelevant-buffer-content)
-    (insert "(" name " " placeholder)
+    (insert "(" name " " placeholder ")")
     (cljr--insert-function name body public?)
 
     ;; Delete any code following the newly created fn before calling middleware
@@ -2169,7 +2223,7 @@ With a prefix the newly created defn will be public."
 
     (re-search-backward fn-regexp)
     (indent-region (point) (point-max))
-    (re-search-forward (s-concat "\(" name unbound))))
+    (re-search-forward (s-concat "\(" name " " unbound))))
 
 ;; ------ minor mode -----------
 ;;;###autoload

@@ -11,7 +11,7 @@
 ;; - company
 ;; - flycheck (not from stable!)
 ;; - flycheck-clojure
-;; - clj-refactor (not from stable!)
+;; - clj-refactor
 
 ;; Add .emacs.d to load-path
 (setq dotfiles-dir (file-name-directory

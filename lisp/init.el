@@ -13,11 +13,10 @@
 ;; - flycheck-clojure
 ;; - clj-refactor
 
-;; Add .emacs.d/lisp to load-path
+;; Add .emacs.d to load-path
 (setq dotfiles-dir (file-name-directory
                     (or (buffer-file-name) load-file-name)))
-(setq dotfiles-lisp-dir (concat dotfiles-dir "lisp/"))
-(add-to-list 'load-path dotfiles-lisp-dir)
+(add-to-list 'load-path dotfiles-dir)
 
 ;; don't use tabs for indent
 (setq-default indent-tabs-mode nil)
@@ -64,18 +63,18 @@ re-downloaded in order to locate PACKAGE."
 		"cfg-hlsexp.el"
 		"cfg-cider.el"
                 "cfg-cljrefactor.el"))
-  (load (concat dotfiles-lisp-dir file)))
+  (load (concat dotfiles-dir file)))
 
 
   
 ;; Custom User configurations:
 ;; If you wish to add additional functionality to your emacs config beyond what is in this setup,
-;; simply add a file called "user-customizations.el" to your .emacs.d/lisp/ directory. Within that file,
+;; simply add a file called "user-customizations.el" to your .emacs.d/ directory. Within that file,
 ;; you have access to the (require-package ...) function defined here, so for example, you could have:
 ;; (require-package 'rainbow-delimiters)
 ;; This would be all that is needed for emacs to automatically download the Rainbow Delimiters package
 ;; from Melpa. Additional configs of any kind could be added to this user-customizations.el file.
 ;; If the file is ommitted, no problem, no customizations are run.
 
-(when (file-exists-p (concat dotfiles-lisp-dir "user-customizations.el"))
-  (load (concat dotfiles-lisp-dir "user-customizations.el")))
+(when (file-exists-p (concat dotfiles-dir "user-customizations.el"))
+  (load (concat dotfiles-dir "user-customizations.el")))

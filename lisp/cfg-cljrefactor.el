@@ -7,7 +7,7 @@
 	    ;; insert keybinding setup here
 	    (cljr-add-keybindings-with-prefix "C-c RET")))
 
-(add-hook 'clojure-mode-hook (lambda () (yas/minor-mode 1)))
+(add-hook 'clojure-mode-hook #'yas-minor-mode)
 
 ;; no auto sort
 (setq cljr-auto-sort-ns nil)

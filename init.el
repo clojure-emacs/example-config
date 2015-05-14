@@ -14,9 +14,11 @@
 ;; - clj-refactor
 
 ;; Add .emacs.d/lisp to load-path
-(setq dotfiles-dir (file-name-directory
-                    (or (buffer-file-name) load-file-name)))
-(setq dotfiles-lisp-dir (concat dotfiles-dir "lisp/"))
+(setq dotfiles-lisp-dir
+      (file-name-as-directory
+       (concat (file-name-directory
+                (or (buffer-file-name) load-file-name))
+               "lisp")))
 (add-to-list 'load-path dotfiles-lisp-dir)
 
 ;; don't use tabs for indent

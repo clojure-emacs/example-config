@@ -37,7 +37,7 @@ Where possible, we make use of a helper function, require-package, that checks i
 
 ## User Customizations
 
-Most users will eventually want more in their emacs config than the clojure-specific tools included here. If you wish to add additional functionality to your emacs config beyond what is in this setup, simply *add a file* called "user-customizations.el" to your .emacs.d/ directory. Within that file, you have access to the (require-package ...) function defined here (explained above), so for example, you could have:
+Most users will eventually want more in their emacs config than the clojure-specific tools included here. If you wish to add additional functionality to your emacs config beyond what is in this setup, simply *add a file* called "user-customizations.el" to your .emacs.d/lisp/ directory. Within that file, you have access to the (require-package ...) function defined here (explained above), so for example, you could have:
 
 ```el
 ;; a line inside your own user-customizations.el in .emacs.d:

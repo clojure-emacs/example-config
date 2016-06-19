@@ -7,8 +7,7 @@ An example Emacs configuration for Clojure development with CIDER and clj-refact
 You can use this configuration as your base Emacs configuration, or adapt it to your own configuration.
 
 1. Clone, copy, or merge this repository as your `~/.emacs.d/` directory
-2. Copy or merge the provided `profiles_sample.clj` to your `~/.lein/` directory as `profiles.clj`
-3. Add a flycheck-clojure configuration to your Clojure project(s)' `project.clj`. You can see [an example of this step](https://github.com/clojure-emacs/squiggly-clojure/blob/master/sample-project/project.clj) in the flycheck-clojure repository.
+2. Add a flycheck-clojure configuration to your Clojure project(s)' `project.clj`. You can see [an example of this step](https://github.com/clojure-emacs/squiggly-clojure/blob/master/sample-project/project.clj) in the flycheck-clojure repository.
 
 Load a Clojure file, and execute `cider-jack-in` (`C-c M-j`).
 
@@ -27,7 +26,7 @@ Happy Clojure hacking!
 
 ## Package versions
 
-Our dependencies largely come from MELPA Stable, which aims to hold only stable versions of packages. The main exception is `clj-refactor` and its dependencies. clj-refactor is available on MELPA Stable, but it has a very out-dated version.
+Our dependencies largely come from MELPA Stable, which aims to hold only stable versions of packages.
 
 ### Using Emacs package management
 

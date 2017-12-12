@@ -61,7 +61,7 @@ re-downloaded in order to locate PACKAGE."
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
-(dolist (file '("cfg-paredit.el"
+(dolist (file '("cfg-parinfer.el"
 		"cfg-flycheck.el"
 		"cfg-hlsexp.el"
 		"cfg-cider.el"
@@ -81,3 +81,17 @@ re-downloaded in order to locate PACKAGE."
 
 (when (file-exists-p (concat dotfiles-lisp-dir "user-customizations.el"))
   (load (concat dotfiles-lisp-dir "user-customizations.el")))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (clj-refactor company hl-sexp flycheck-clojure parinfer exec-path-from-shell epl))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

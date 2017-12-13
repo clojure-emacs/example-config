@@ -1,6 +1,6 @@
 # Example Config
 
-An example Emacs configuration for Clojure development with CIDER and clj-refactor.
+An example Emacs configuration for Clojure development with CIDER and clj-refactor. Forked from [another one](https://github.com/clojure-emacs/example-config) and updated with some things I like. Another notable piece is that I switched to a dark theme, specifically: [atom one dark](https://github.com/jonathanchu/atom-one-dark-theme)
 
 ## Usage
 
@@ -17,12 +17,19 @@ Happy Clojure hacking!
 
 ## Featured packages
 
-* [paredit, very basic intro](http://www.braveclojure.com/using-emacs-with-clojure/#5__Paredit), [cheat sheet](https://github.com/joelittlejohn/paredit-cheatsheet)
+* [parinfer](https://github.com/DogLooksGood/parinfer-mode) - Changed from paredit
 * [flycheck](http://www.flycheck.org/), [quick start](http://www.flycheck.org/en/latest/guide/quickstart.html)
 * [clojure-mode](https://github.com/clojure-emacs/clojure-mode)
 * [cider](https://github.com/clojure-emacs/cider), [cider-mode](https://github.com/clojure-emacs/cider#cider-mode)
 * [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el), [refactor functions](https://github.com/clojure-emacs/clj-refactor.el#usage)
 * [flycheck-clojure, aka squiggly-clojure](https://github.com/clojure-emacs/squiggly-clojure)
+
+### Added packages
+
+* [projectile](https://github.com/bbatsov/projectile)
+* [smex](https://github.com/nonsequitur/smex)
+* [helm](https://github.com/emacs-helm/helm)
+* [atom-one-dark-theme](https://github.com/jonathanchu/atom-one-dark-theme)
 
 ## Package versions
 

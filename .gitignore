@@ -1,6 +1,7 @@
 *~
 *.elc
 elpa/magit-1.0.0/magit-autoloads.el
+elpa/**
 auto-save-list/*
 ac-comphist.dat
 url
@@ -12,3 +13,5 @@ bookmarks
 request
 \#*\#
 tramp
+projectile.cache
+projectile-bookmarks.eld

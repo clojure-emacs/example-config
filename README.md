@@ -1,6 +1,6 @@
 # Example Config
 
-An example Emacs configuration for Clojure development with CIDER and clj-refactor. Forked from [another one](https://github.com/clojure-emacs/example-config) and updated with some things I like.
+An example Emacs configuration for Clojure development with CIDER and clj-refactor. Forked from [another one](https://github.com/clojure-emacs/example-config) and updated with some things I like. Another notable piece is that I switched to a dark theme, specifically: [atom one dark](https://github.com/jonathanchu/atom-one-dark-theme)
 
 ## Usage
 
@@ -28,6 +28,8 @@ Happy Clojure hacking!
 
 * [projectile](https://github.com/bbatsov/projectile)
 * [smex](https://github.com/nonsequitur/smex)
+* [helm](https://github.com/emacs-helm/helm)
+* [atom-one-dark-theme](https://github.com/jonathanchu/atom-one-dark-theme)
 
 ## Package versions
 
